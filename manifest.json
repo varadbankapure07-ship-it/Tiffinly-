@@ -1,6 +1,6 @@
 {
-  "name": "MealMate - Tiffin Tracker",
-  "short_name": "MealMate",
+  "name": "Tiffinly - Tiffin Tracker",
+  "short_name": "Tiffinly",
   "description": "Track daily tiffins, missed meals and mess bills automatically.",
   "id": "./",
   "start_url": "./",
