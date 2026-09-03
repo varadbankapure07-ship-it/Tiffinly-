@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>🍱 Mess Tiffin Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF7F0;
+    --surface: #FFFFFF;
+    --ink: #23302A;
+    --ink-soft: #6B7A72;
+    --hairline: #E9E3D6;
+    --teal: #2F6F5E;
+    --teal-deep: #234F42;
+    --mustard: #E8A33D;
+    --clay: #D9573F;
+    --leaf: #3C9D6B;
+    --leaf-bg: #E7F5EC;
+    --clay-bg: #FBE9E4;
+    --mustard-bg: #FDF1DD;
+    --radius-lg: 22px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --shadow: 0 8px 24px rgba(35, 79, 66, 0.08);
+    --shadow-sm: 0 3px 10px rgba(35, 79, 66, 0.06);
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,h2,h3,.display{
+    font-family: 'Poppins', sans-serif;
+  }
+
+  button{ font-family: inherit; }
+
+  .wrap{
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 16px 100px;
+  }
+
+  /* HEADER */
+  .app-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 6px 2px 18px;
+  }
+  .app-header .bowl{
+    font-size: 34px;
+    line-height:1;
+  }
+  .app-header h1{
+    font-size: 22px;
+    font-weight:700;
+    margin:0;
+    color: var(--teal-deep);
+    letter-spacing: -0.3px;
+  }
+  .app-header p{
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  /* MONTH NAV */
+  .month-nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background: var(--teal-deep);
+    color: #fff;
+    border-radius: var(--radius-lg);
+    padding: 14px 8px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .month-nav button{
+    background: rgba(255,255,255,0.14);
+    border: none;
+    color:#fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background .15s ease, transform .15s ease;
+  }
+  .month-nav button:active{ transform: scale(0.92); background: rgba(255,255,255,0.26); }
+  .month-nav .month-label{
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size: 17px;
+    text-align:center;
+  }
+  .month-nav .month-tag{
+    display:block;
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size: 11px;
+    opacity: 0.75;
+    margin-top:2px;
+    letter-spacing: 0.3px;
+  }
+
+  /* SECTION */
+  .section{ margin-bottom: 26px; }
+  .section-title{
+    font-size: 15px;
+    font-weight:700;
+    color: var(--teal-deep);
+    margin: 0 0 12px 4px;
+  }
+
+  /* DASHBOARD CARDS */
+  .dash-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .dash-card{
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: 16px 14px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--hairline);
+  }
+  .dash-card .lbl{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-weight:600;
+    margin-bottom: 6px;
+  }
+  .dash-card .val{
+    font-family:'Poppins',sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .dash-card.bill .val{ color: var(--teal-deep); }
+  .dash-card.deducted .val{ color: var(--clay); }
+  .dash-card.remaining .val{ color: var(--leaf); }
+  .dash-card.missed .val{ color: var(--mustard); }
+  .dash-card .sub{
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  /* DAY CARDS */
+  .day-card{
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--hairline);
+    box-shadow: var(--shadow-sm);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .day-card-head{
+    display:flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 0 2px;
+  }
+  .day-card-head .date-num{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .day-card-head .weekday{
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight:500;
+  }
+  .today-dot{
+    display:inline-block;
+    width:6px; height:6px;
+    border-radius:50%;
+    background: var(--mustard);
+    margin-left:6px;
+    vertical-align: middle;
+  }
+
+  .slot-row{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    padding: 12px 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    cursor:pointer;
+    min-height: 56px;
+    border: 1.5px solid transparent;
+    transition: transform .1s ease, background .15s ease;
+    user-select: none;
+  }
+  .slot-row:last-child{ margin-bottom:0; }
+  .slot-row:active{ transform: scale(0.985); }
+  .slot-row.taken{
+    background: var(--leaf-bg);
+    border-color: rgba(60,157,107,0.25);
+  }
+  .slot-row.nottaken{
+    background: var(--clay-bg);
+    border-color: rgba(217,87,63,0.25);
+  }
+  .slot-emoji{ font-size: 24px; flex-shrink:0; }
+  .slot-body{ flex:1; min-width:0; }
+  .slot-name{
+    font-weight:700;
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+  .slot-status{
+    font-size: 13px;
+    margin-top: 2px;
+    font-weight:600;
+  }
+  .slot-row.taken .slot-status{ color: var(--leaf); }
+  .slot-row.nottaken .slot-status{ color: var(--clay); }
+  .slot-row.nottaken .slot-status .undo{
+    color: var(--mustard);
+    font-weight:700;
+    margin-left: 4px;
+  }
+  .slot-badge{
+    flex-shrink:0;
+    font-size: 11px;
+    font-weight:700;
+    padding: 5px 9px;
+    border-radius: 999px;
+  }
+  .slot-row.taken .slot-badge{ background: var(--leaf); color:#fff; }
+  .slot-row.nottaken .slot-badge{ background: var(--clay); color:#fff; }
+
+  /* HISTORY TABLE */
+  .history-card{
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--hairline);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  table.hist-table{
+    width:100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  table.hist-table th{
+    text-align:left;
+    background: #F3F0E7;
+    color: var(--ink-soft);
+    font-weight:700;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 10px 10px;
+  }
+  table.hist-table td{
+    padding: 11px 10px;
+    border-top: 1px solid var(--hairline);
+    color: var(--ink);
+    vertical-align: middle;
+  }
+  table.hist-table tr:hover td{ background: #FAFAF7; }
+  .hist-amount{ color: var(--clay); font-weight:700; }
+  .undo-btn{
+    background: var(--mustard-bg);
+    color: #9A6414;
+    border: 1px solid rgba(232,163,61,0.4);
+    font-weight:700;
+    font-size: 12.5px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor:pointer;
+    white-space: nowrap;
+  }
+  .undo-btn:active{ transform: scale(0.95); }
+  .empty-state{
+    padding: 30px 16px;
+    text-align:center;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+  }
+
+  /* PREVIOUS MONTHS */
+  .prev-month-card{
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .prev-month-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 10px;
+  }
+  .prev-month-head .name{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size: 15px;
+  }
+  .current-chip{
+    background: var(--mustard-bg);
+    color: #9A6414;
+    font-size: 10.5px;
+    font-weight:700;
+    padding: 3px 8px;
+    border-radius: 999px;
+    margin-left: 8px;
+  }
+  .prev-month-stats{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .prev-month-stats div{
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .prev-month-stats div b{
+    display:block;
+    font-size: 13.5px;
+    color: var(--ink);
+    font-family:'Poppins',sans-serif;
+    margin-top:2px;
+  }
+  .prev-month-actions{
+    display:flex;
+    gap: 8px;
+  }
+  .btn-ghost{
+    flex:1;
+    background: #F3F0E7;
+    border: none;
+    color: var(--teal-deep);
+    font-weight:700;
+    font-size: 13px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    cursor:pointer;
+  }
+  .btn-ghost:active{ transform: scale(0.97); }
+  .btn-ghost.primary{
+    background: var(--teal);
+    color:#fff;
+  }
+
+  /* SETTINGS */
+  .settings-card{
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 18px 16px;
+  }
+  .field{ margin-bottom: 16px; }
+  .field label{
+    display:block;
+    font-size: 12.5px;
+    font-weight:700;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .field .input-wrap{
+    display:flex;
+    align-items:center;
+    background: #F7F5EF;
+    border: 1.5px solid var(--hairline);
+    border-radius: var(--radius-sm);
+    padding: 0 12px;
+  }
+  .field .input-wrap span{
+    color: var(--ink-soft);
+    font-weight:700;
+    margin-right: 4px;
+  }
+  .field input{
+    border:none;
+    background:transparent;
+    outline:none;
+    padding: 13px 0;
+    font-size: 16px;
+    font-weight:600;
+    color: var(--ink);
+    width:100%;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-row{
+    display:flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .btn-main{
+    flex:1;
+    background: var(--teal);
+    color:#fff;
+    border:none;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    font-weight:700;
+    font-size: 14.5px;
+    cursor:pointer;
+  }
+  .btn-main:active{ transform: scale(0.98); }
+  .btn-outline{
+    flex:1;
+    background: transparent;
+    color: var(--clay);
+    border: 1.5px solid var(--clay);
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    font-weight:700;
+    font-size: 14.5px;
+    cursor:pointer;
+  }
+  .btn-outline:active{ transform: scale(0.98); }
+  .export-btn{
+    width:100%;
+    background: var(--mustard-bg);
+    color:#9A6414;
+    border: 1.5px solid rgba(232,163,61,0.4);
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    font-weight:700;
+    font-size: 14.5px;
+    cursor:pointer;
+    margin-bottom: 12px;
+  }
+  .export-btn:active{ transform: scale(0.98); }
+
+  /* TOAST */
+  #toastHost{
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 20px;
+    display:flex;
+    justify-content:center;
+    pointer-events:none;
+    z-index: 999;
+    padding: 0 16px;
+  }
+  .toast{
+    background: var(--teal-deep);
+    color:#fff;
+    padding: 13px 18px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight:600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    max-width: 100%;
+    text-align:center;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .toast.show{ opacity: 1; transform: translateY(0); }
+
+  /* MODAL */
+  .modal-overlay{
+    position: fixed; inset:0;
+    background: rgba(20,30,26,0.5);
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    z-index: 1000;
+    padding: 0;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal-box{
+    background: #fff;
+    border-radius: 22px 22px 0 0;
+    padding: 24px 20px 28px;
+    width:100%;
+    max-width: 480px;
+    animation: slideUp .2s ease;
+  }
+  @media (min-width: 560px){
+    .modal-overlay{ align-items:center; }
+    .modal-box{ border-radius: 22px; }
+  }
+  @keyframes slideUp{
+    from{ transform: translateY(30px); opacity:0; }
+    to{ transform: translateY(0); opacity:1; }
+  }
+  .modal-box h3{
+    margin: 0 0 8px;
+    font-size: 17px;
+    color: var(--ink);
+  }
+  .modal-box p{
+    margin: 0 0 20px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .modal-actions{ display:flex; gap: 10px; }
+
+  /* MEMBERS */
+  .member-chip{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-width: 90px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1.5px solid var(--hairline);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    cursor:pointer;
+    flex-shrink:0;
+    text-align:center;
+    transition: transform .1s ease, background .15s ease;
+  }
+  .member-chip:active{ transform: scale(0.96); }
+  .member-chip .member-chip-name{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size: 12.5px;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .member-chip .member-chip-mobile{
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .member-chip.active{
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+  .member-chip.active .member-chip-name,
+  .member-chip.active .member-chip-mobile{
+    color: #fff;
+  }
+  .member-chip.add{
+    background: var(--mustard-bg);
+    border-color: rgba(232,163,61,0.4);
+  }
+  .member-chip.add .member-chip-name{ color: #9A6414; }
+  .member-chip{ position: relative; }
+  .member-chip .member-delete-btn{
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--clay);
+    color: #fff;
+    border: 2px solid var(--bg);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .member-chip.active .member-delete-btn{ border-color: var(--teal); }
+
+  ::-webkit-scrollbar{ width:0; height:0; }
+
+  @media (max-width: 380px){
+    .dash-grid{ gap:10px; }
+    .dash-card .val{ font-size: 19px; }
+  }
+</style>
+
+<!-- PWA -->
+<meta name="theme-color" content="#234F42">
+<meta name="description" content="Track missed tiffins, deductions, and monthly mess bills automatically.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tiffin Tracker">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+</head>
+<body>
+
+<div class="wrap" id="mainWrap">
+
+  <div class="app-header">
+    <div class="bowl">🍱</div>
+    <div>
+      <h1>Mess Tiffin Tracker</h1>
+      <p>Track missed tiffins, bills update automatically</p>
+    </div>
+  </div>
+
+  <div class="section" id="membersSection">
+    <div class="section-title">Members</div>
+    <div id="membersContainer" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:4px;"></div>
+  </div>
+
+  <div class="month-nav">
+    <button onclick="changeMonth(-1)" aria-label="Previous month">⬅</button>
+    <div>
+      <div class="month-label" id="monthLabel">September 2026</div>
+      <span class="month-tag" id="monthTag">CURRENT MONTH</span>
+    </div>
+    <button onclick="changeMonth(1)" aria-label="Next month">➡</button>
+  </div>
+
+  <div class="section" id="dashboardSection">
+    <div class="dash-grid">
+      <div class="dash-card bill">
+        <div class="lbl">Monthly Bill</div>
+        <div class="val" id="cardBill">₹0</div>
+        <div class="sub">Editable in Settings</div>
+      </div>
+      <div class="dash-card deducted">
+        <div class="lbl">Total Deducted</div>
+        <div class="val" id="cardDeducted">₹0</div>
+        <div class="sub" id="cardDeductedSub">0 missed × ₹0</div>
+      </div>
+      <div class="dash-card remaining">
+        <div class="lbl">Remaining Bill</div>
+        <div class="val" id="cardRemaining">₹0</div>
+        <div class="sub">Bill − Deducted</div>
+      </div>
+      <div class="dash-card missed">
+        <div class="lbl">Missed Tiffins</div>
+        <div class="val" id="cardMissed">0 Tiffins</div>
+        <div class="sub">This month</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="calendarSection">
+    <div class="section-title">Daily Tiffin Tracker</div>
+    <div id="calendarContainer"></div>
+  </div>
+
+  <div class="section" id="historySection">
+    <div class="section-title">Deduction History</div>
+    <div class="history-card">
+      <div id="historyContainer"></div>
+    </div>
+  </div>
+
+  <div class="section" id="prevMonthsSection">
+    <div class="section-title">Previous Months</div>
+    <div id="prevMonthsContainer"></div>
+  </div>
+
+  <div class="section" id="settingsSection">
+    <div class="section-title">Settings — <span id="settingsMonthLabel"></span></div>
+    <div class="settings-card">
+      <div class="field">
+        <label>Monthly Mess Bill</label>
+        <div class="input-wrap">
+          <span>₹</span>
+          <input type="number" id="inputBill" inputmode="numeric" placeholder="3000">
+        </div>
+      </div>
+      <div class="field">
+        <label>Tiffin Price</label>
+        <div class="input-wrap">
+          <span>₹</span>
+          <input type="number" id="inputPrice" inputmode="numeric" placeholder="50">
+        </div>
+      </div>
+      <div class="btn-row" style="margin-bottom:14px;">
+        <button class="btn-main" onclick="saveSettings()">Save Settings</button>
+      </div>
+      <button class="export-btn" onclick="exportCSV()">⬇ Export CSV (this month)</button>
+      <div class="btn-row">
+        <button class="btn-outline" onclick="requestClearMonth()">Clear Current Month</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toastHost"></div>
+
+<div class="modal-overlay" id="addMemberModal">
+  <div class="modal-box">
+    <h3 id="addMemberModalTitle">Add Member</h3>
+    <p id="addMemberModalText">Enter the member's name and mobile number to create their account.</p>
+    <div class="field">
+      <label>Member Name</label>
+      <div class="input-wrap">
+        <input type="text" id="memberNameInput" placeholder="e.g. Rahul Sharma">
+      </div>
+    </div>
+    <div class="field">
+      <label>Mobile Number</label>
+      <div class="input-wrap">
+        <span>+91</span>
+        <input type="tel" id="memberMobileInput" inputmode="numeric" placeholder="9876543210" maxlength="10">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="addMemberCancelBtn" onclick="closeAddMemberModal()">Cancel</button>
+      <button class="btn-main" style="flex:1;" onclick="confirmAddMember()">Confirm &amp; Create Account</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteMemberModal">
+  <div class="modal-box">
+    <h3 id="deleteMemberModalTitle">Delete this member?</h3>
+    <p id="deleteMemberModalText">Are you sure you want to delete this member's account? All their tiffin records will be permanently removed. This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeDeleteMemberModal()">Cancel</button>
+      <button class="btn-outline" style="flex:1;" onclick="confirmDeleteMember()">Delete Member</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="clearModal">
+  <div class="modal-box">
+    <h3 id="clearModalTitle">Clear this month's records?</h3>
+    <p id="clearModalText">Are you sure you want to delete this month's tiffin records? This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeClearModal()">Cancel</button>
+      <button class="btn-outline" style="flex:1;" onclick="confirmClearMonth()">Clear Month</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'messTiffinTrackerData_v2';
+  const LEGACY_STORAGE_KEY = 'messTiffinTrackerData_v1';
+  const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  let appData = loadAppData();
+  let data = null; // points to the currently active member's data
+  const todayObj = new Date();
+  const todayKey = monthKeyFromDate(todayObj);
+  const todayDateStr = dateKey(todayObj.getFullYear(), todayObj.getMonth(), todayObj.getDate());
+  let activeMonthKey = todayKey;
+  let pendingClearKey = null;
+  let pendingDeleteUserId = null;
+
+  ensureActiveUser();
+  // ensure current real month exists so it always shows on dashboard/previous list
+  if(data){ getMonthObj(todayKey, true); }
+
+  function loadAppData(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        const parsed = JSON.parse(raw);
+        if(parsed && parsed.users) return parsed;
+      }
+    }catch(e){ /* ignore corrupt storage */ }
+
+    // migrate old single-user data (if any) into the multi-user format
+    try{
+      const oldRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if(oldRaw){
+        const oldParsed = JSON.parse(oldRaw);
+        if(oldParsed && oldParsed.months){
+          return { users: {}, activeUserId: null, _migrated: oldParsed };
+        }
+      }
+    }catch(e){ /* ignore corrupt storage */ }
+
+    return { users: {}, activeUserId: null };
+  }
+
+  function ensureActiveUser(){
+    const ids = Object.keys(appData.users);
+    if(!appData.activeUserId || !appData.users[appData.activeUserId]){
+      appData.activeUserId = ids.length ? ids[0] : null;
+    }
+    data = appData.activeUserId ? appData.users[appData.activeUserId] : null;
+  }
+
+  function saveData(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+  }
+
+  function openAddMemberModal(isFirst){
+    document.getElementById('addMemberModalTitle').textContent = isFirst ? 'Welcome! Create Your Account' : 'Add Member';
+    document.getElementById('addMemberModalText').textContent = isFirst
+      ? "Enter the member's name and mobile number to create the first account."
+      : "Enter the new member's name and mobile number to create their account.";
+    document.getElementById('addMemberCancelBtn').style.display = isFirst ? 'none' : '';
+    document.getElementById('addMemberModal').dataset.first = isFirst ? '1' : '0';
+    document.getElementById('addMemberModal').classList.add('show');
+  }
+
+  function closeAddMemberModal(){
+    document.getElementById('addMemberModal').classList.remove('show');
+    document.getElementById('memberNameInput').value = '';
+    document.getElementById('memberMobileInput').value = '';
+  }
+
+  function confirmAddMember(){
+    const isFirst = document.getElementById('addMemberModal').dataset.first === '1';
+    const name = document.getElementById('memberNameInput').value.trim();
+    const mobile = document.getElementById('memberMobileInput').value.trim();
+
+    if(!name){ showToast('⚠ Please enter member name'); return; }
+    if(!/^\d{10}$/.test(mobile)){ showToast('⚠ Please enter a valid 10-digit mobile number'); return; }
+
+    const id = 'u_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    const newUser = { name: name, mobile: mobile, months: {}, defaultBill: 3000, defaultPrice: 50 };
+
+    if(isFirst && appData._migrated){
+      newUser.months = appData._migrated.months || {};
+      newUser.defaultBill = appData._migrated.defaultBill || 3000;
+      newUser.defaultPrice = appData._migrated.defaultPrice || 50;
+      delete appData._migrated;
+    }
+
+    appData.users[id] = newUser;
+    appData.activeUserId = id;
+    data = newUser;
+    getMonthObj(todayKey, true);
+    saveData();
+
+    closeAddMemberModal();
+    showToast('✓ Account created for ' + name);
+    render();
+  }
+
+  function switchUser(id){
+    if(!appData.users[id] || id === appData.activeUserId) return;
+    appData.activeUserId = id;
+    data = appData.users[id];
+    getMonthObj(todayKey, true);
+    saveData();
+    render();
+  }
+
+  function requestDeleteMember(id, event){
+    if(event) event.stopPropagation();
+    const u = appData.users[id];
+    if(!u) return;
+    pendingDeleteUserId = id;
+    document.getElementById('deleteMemberModalTitle').textContent = 'Delete ' + u.name + '?';
+    document.getElementById('deleteMemberModalText').textContent =
+      "Are you sure you want to delete " + u.name + "'s account? All their tiffin records will be permanently removed. This cannot be undone.";
+    document.getElementById('deleteMemberModal').classList.add('show');
+  }
+
+  function closeDeleteMemberModal(){
+    pendingDeleteUserId = null;
+    document.getElementById('deleteMemberModal').classList.remove('show');
+  }
+
+  function confirmDeleteMember(){
+    if(!pendingDeleteUserId){ closeDeleteMemberModal(); return; }
+    const id = pendingDeleteUserId;
+    const wasActive = id === appData.activeUserId;
+    const name = appData.users[id] ? appData.users[id].name : '';
+    delete appData.users[id];
+
+    if(wasActive){
+      const remainingIds = Object.keys(appData.users);
+      appData.activeUserId = remainingIds.length ? remainingIds[0] : null;
+      data = appData.activeUserId ? appData.users[appData.activeUserId] : null;
+      if(data) getMonthObj(todayKey, true);
+    }
+
+    saveData();
+    closeDeleteMemberModal();
+    showToast('✓ ' + name + "'s account deleted");
+    render();
+  }
+
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function monthKeyFromDate(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+
+  function dateKey(year, monthIndex, day){ return year + '-' + pad(monthIndex + 1) + '-' + pad(day); }
+
+  function parseMonthKey(key){
+    const parts = key.split('-');
+    return { year: parseInt(parts[0], 10), monthIndex: parseInt(parts[1], 10) - 1 };
+  }
+
+  function monthLabel(key){
+    const { year, monthIndex } = parseMonthKey(key);
+    return MONTH_NAMES[monthIndex] + ' ' + year;
+  }
+
+  function daysInMonthCount(key){
+    const { year, monthIndex } = parseMonthKey(key);
+    return new Date(year, monthIndex + 1, 0).getDate();
+  }
+
+  function getMonthObj(key, persist){
+    if(data.months[key]) return data.months[key];
+    const price = data.defaultPrice || 50;
+    const daysCount = daysInMonthCount(key);
+    const autoBill = daysCount * price * 2; // day tiffin + night tiffin, per day
+    const obj = { bill: autoBill, price: price, days: {} };
+    if(persist){
+      data.months[key] = obj;
+      saveData();
+    }
+    return obj;
+  }
+
+  function getSlotStatus(monthObj, dateStr, slot){
+    const entry = monthObj.days[dateStr];
+    if(!entry) return 'taken';
+    return entry[slot] || 'taken';
+  }
+
+  function toggleSlot(monthKey, dateStr, slot){
+    const monthObj = getMonthObj(monthKey, true);
+    if(!monthObj.days[dateStr]) monthObj.days[dateStr] = { day: 'taken', night: 'taken' };
+    const current = monthObj.days[dateStr][slot] || 'taken';
+    const next = current === 'taken' ? 'nottaken' : 'taken';
+    monthObj.days[dateStr][slot] = next;
+
+    if(monthObj.days[dateStr].day === 'taken' && monthObj.days[dateStr].night === 'taken'){
+      delete monthObj.days[dateStr];
+    }
+
+    saveData();
+
+    const price = monthObj.price;
+    const slotLabel = slot === 'day' ? 'Day' : 'Night';
+    if(next === 'nottaken'){
+      showToast('✓ ' + slotLabel + ' marked as Not Taken · ₹' + price + ' deducted');
+    } else {
+      showToast('↶ ' + slotLabel + ' marked as Taken · ₹' + price + ' added back');
+    }
+
+    render();
+  }
+
+  function computeHistory(monthKey){
+    const monthObj = getMonthObj(monthKey, false);
+    const nDays = daysInMonthCount(monthKey);
+    const { year, monthIndex } = parseMonthKey(monthKey);
+    const history = [];
+    let seq = 1;
+    for(let d = 1; d <= nDays; d++){
+      const dstr = dateKey(year, monthIndex, d);
+      const entry = monthObj.days[dstr];
+      if(!entry) continue;
+      if(entry.day === 'nottaken'){
+        history.push({ no: seq++, date: dstr, slot: 'day', label: 'Day', emoji: '☀️', amount: monthObj.price });
+      }
+      if(entry.night === 'nottaken'){
+        history.push({ no: seq++, date: dstr, slot: 'night', label: 'Night', emoji: '🌙', amount: monthObj.price });
+      }
+    }
+    return history;
+  }
+
+  function computeStats(monthKey){
+    const monthObj = getMonthObj(monthKey, false);
+    const history = computeHistory(monthKey);
+    const missed = history.length;
+    const deducted = missed * monthObj.price;
+    const remaining = monthObj.bill - deducted;
+    return { bill: monthObj.bill, price: monthObj.price, missed, deducted, remaining };
+  }
+
+  function formatRupee(n){
+    return '₹' + Number(n).toLocaleString('en-IN');
+  }
+
+  function formatDayLabel(dateStr){
+    const parts = dateStr.split('-').map(Number);
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    return pad(d.getDate()) + ' ' + MONTH_NAMES[d.getMonth()];
+  }
+
+  function formatHistoryDate(dateStr){
+    const parts = dateStr.split('-').map(Number);
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    return pad(d.getDate()) + ' ' + MONTH_NAMES[d.getMonth()].slice(0,3) + ' ' + parts[0];
+  }
+
+  function weekdayShort(dateStr){
+    const parts = dateStr.split('-').map(Number);
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    return d.toLocaleDateString('en-US', { weekday: 'long' });
+  }
+
+  function changeMonth(delta){
+    const { year, monthIndex } = parseMonthKey(activeMonthKey);
+    const newDate = new Date(year, monthIndex + delta, 1);
+    activeMonthKey = monthKeyFromDate(newDate);
+    render();
+    document.getElementById('dashboardSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function openMonth(key, target){
+    activeMonthKey = key;
+    render();
+    const el = document.getElementById(target === 'history' ? 'historySection' : 'calendarSection');
+    if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function saveSettings(){
+    const billVal = parseFloat(document.getElementById('inputBill').value);
+    const priceVal = parseFloat(document.getElementById('inputPrice').value);
+    const monthObj = getMonthObj(activeMonthKey, true);
+    if(!isNaN(billVal) && billVal >= 0) monthObj.bill = billVal;
+    if(!isNaN(priceVal) && priceVal > 0) monthObj.price = priceVal;
+    data.defaultBill = monthObj.bill;
+    data.defaultPrice = monthObj.price;
+    saveData();
+    showToast('✓ ' + monthLabel(activeMonthKey) + ' updated successfully');
+    render();
+  }
+
+  function requestClearMonth(){
+    pendingClearKey = activeMonthKey;
+    document.getElementById('clearModalTitle').textContent = 'Clear ' + monthLabel(activeMonthKey) + '?';
+    document.getElementById('clearModalText').textContent =
+      'Are you sure you want to clear all tiffin records for ' + monthLabel(activeMonthKey) + '? This cannot be undone.';
+    document.getElementById('clearModal').classList.add('show');
+  }
+
+  function closeClearModal(){
+    pendingClearKey = null;
+    document.getElementById('clearModal').classList.remove('show');
+  }
+
+  function confirmClearMonth(){
+    if(pendingClearKey){
+      const wasCurrent = pendingClearKey === todayKey;
+      const bill = data.months[pendingClearKey] ? data.months[pendingClearKey].bill : data.defaultBill;
+      const price = data.months[pendingClearKey] ? data.months[pendingClearKey].price : data.defaultPrice;
+      data.months[pendingClearKey] = { bill: bill, price: price, days: {} };
+      saveData();
+      showToast('✓ ' + monthLabel(pendingClearKey) + ' cleared');
+    }
+    closeClearModal();
+    render();
+  }
+
+  function exportCSV(){
+    const history = computeHistory(activeMonthKey);
+    let csv = 'No.,Date,Tiffin,Amount\n';
+    history.forEach(h => {
+      csv += h.no + ',' + formatHistoryDate(h.date) + ',' + h.label + ',' + h.amount + '\n';
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tiffin-history-' + activeMonthKey + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('⬇ CSV exported for ' + monthLabel(activeMonthKey));
+  }
+
+  let toastTimer = null;
+  function showToast(msg){
+    const host = document.getElementById('toastHost');
+    host.innerHTML = '';
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    host.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      t.classList.remove('show');
+      setTimeout(() => { if(t.parentNode) t.parentNode.removeChild(t); }, 250);
+    }, 2600);
+  }
+
+  function renderMembers(){
+    const container = document.getElementById('membersContainer');
+    if(!container) return;
+    let html = '';
+    Object.keys(appData.users).forEach(id => {
+      const u = appData.users[id];
+      const isActive = id === appData.activeUserId;
+      html += '<div class="member-chip' + (isActive ? ' active' : '') + '" onclick="switchUser(\'' + id + '\')">' +
+        '<div class="member-delete-btn" onclick="requestDeleteMember(\'' + id + '\', event)">✕</div>' +
+        '<div class="member-chip-name">' + u.name + '</div>' +
+        '<div class="member-chip-mobile">' + u.mobile + '</div>' +
+      '</div>';
+    });
+    html += '<div class="member-chip add" onclick="openAddMemberModal(false)">' +
+      '<div class="member-chip-name">+ Add Member</div>' +
+    '</div>';
+    container.innerHTML = html;
+  }
+
+  function render(){
+    renderMembers();
+
+    if(!data){
+      document.getElementById('mainWrap').style.display = 'none';
+      openAddMemberModal(true);
+      return;
+    }
+    document.getElementById('mainWrap').style.display = '';
+
+    const monthObj = getMonthObj(activeMonthKey, false);
+    const stats = computeStats(activeMonthKey);
+    const history = computeHistory(activeMonthKey);
+
+    // history lookup for calendar slot numbers
+    const seqMap = {};
+    history.forEach(h => { seqMap[h.date + '_' + h.slot] = h.no; });
+
+    // month nav
+    document.getElementById('monthLabel').textContent = monthLabel(activeMonthKey);
+    document.getElementById('monthTag').textContent = activeMonthKey === todayKey ? 'CURRENT MONTH' : 'EDITING PAST MONTH';
+
+    // dashboard
+    document.getElementById('cardBill').textContent = formatRupee(stats.bill);
+    document.getElementById('cardDeducted').textContent = formatRupee(stats.deducted);
+    document.getElementById('cardDeductedSub').textContent = stats.missed + ' missed × ' + formatRupee(stats.price);
+    document.getElementById('cardRemaining').textContent = formatRupee(stats.remaining);
+    document.getElementById('cardMissed').textContent = stats.missed + ' Tiffin' + (stats.missed === 1 ? '' : 's');
+
+    // calendar
+    const nDays = daysInMonthCount(activeMonthKey);
+    const { year, monthIndex } = parseMonthKey(activeMonthKey);
+    let calHtml = '';
+    for(let d = 1; d <= nDays; d++){
+      const dstr = dateKey(year, monthIndex, d);
+      const dayStatus = getSlotStatus(monthObj, dstr, 'day');
+      const nightStatus = getSlotStatus(monthObj, dstr, 'night');
+      const isToday = dstr === todayDateStr;
+
+      calHtml += '<div class="day-card">';
+      calHtml += '<div class="day-card-head"><span class="date-num">' + formatDayLabel(dstr) + (isToday ? '<span class="today-dot"></span>' : '') + '</span><span class="weekday">' + weekdayShort(dstr) + '</span></div>';
+
+      calHtml += renderSlotRow(dstr, 'day', '☀️', 'Day', dayStatus, seqMap, monthObj.price);
+      calHtml += renderSlotRow(dstr, 'night', '🌙', 'Night', nightStatus, seqMap, monthObj.price);
+
+      calHtml += '</div>';
+    }
+    document.getElementById('calendarContainer').innerHTML = calHtml;
+
+    // history
+    if(history.length === 0){
+      document.getElementById('historyContainer').innerHTML = '<div class="empty-state">No missed tiffins yet this month. Every tiffin taken 🎉</div>';
+    } else {
+      let hHtml = '<table class="hist-table"><thead><tr><th>No.</th><th>Date</th><th>Tiffin</th><th>Amount</th><th>Action</th></tr></thead><tbody>';
+      history.forEach(h => {
+        hHtml += '<tr>' +
+          '<td>' + h.no + '</td>' +
+          '<td>' + formatHistoryDate(h.date) + '</td>' +
+          '<td>' + h.emoji + ' ' + h.label + '</td>' +
+          '<td class="hist-amount">' + formatRupee(h.amount) + '</td>' +
+          '<td><button class="undo-btn" onclick="toggleSlot(\'' + activeMonthKey + '\',\'' + h.date + '\',\'' + h.slot + '\')">↶ Undo</button></td>' +
+          '</tr>';
+      });
+      hHtml += '</tbody></table>';
+      document.getElementById('historyContainer').innerHTML = hHtml;
+    }
+
+    // previous months
+    const keys = Object.keys(data.months).sort().reverse();
+    let pmHtml = '';
+    if(keys.length === 0){
+      pmHtml = '<div class="empty-state">No months tracked yet.</div>';
+    } else {
+      keys.forEach(key => {
+        const s = computeStats(key);
+        pmHtml += '<div class="prev-month-card">' +
+          '<div class="prev-month-head"><span class="name">' + monthLabel(key) + (key === todayKey ? '<span class="current-chip">CURRENT</span>' : '') + '</span></div>' +
+          '<div class="prev-month-stats">' +
+            '<div>Bill<b>' + formatRupee(s.bill) + '</b></div>' +
+            '<div>Deducted<b>' + formatRupee(s.deducted) + '</b></div>' +
+            '<div>Remaining<b>' + formatRupee(s.remaining) + '</b></div>' +
+            '<div>Missed<b>' + s.missed + '</b></div>' +
+          '</div>' +
+          '<div class="prev-month-actions">' +
+            '<button class="btn-ghost" onclick="openMonth(\'' + key + '\',\'history\')">View History</button>' +
+            '<button class="btn-ghost primary" onclick="openMonth(\'' + key + '\',\'calendar\')">Edit</button>' +
+          '</div>' +
+        '</div>';
+      });
+    }
+    document.getElementById('prevMonthsContainer').innerHTML = pmHtml;
+
+    // settings
+    document.getElementById('settingsMonthLabel').textContent = monthLabel(activeMonthKey);
+    document.getElementById('inputBill').value = monthObj.bill;
+    document.getElementById('inputPrice').value = monthObj.price;
+  }
+
+  function renderSlotRow(dstr, slot, emoji, label, status, seqMap, price){
+    const isTaken = status === 'taken';
+    const no = seqMap[dstr + '_' + slot];
+    let statusHtml;
+    if(isTaken){
+      statusHtml = 'Taken';
+    } else {
+      statusHtml = 'Not Taken #' + no + ' · ' + formatRupee(price) + '<span class="undo"> · ↶ Undo</span>';
+    }
+    return '<div class="slot-row ' + (isTaken ? 'taken' : 'nottaken') + '" onclick="toggleSlot(\'' + activeMonthKey + '\',\'' + dstr + '\',\'' + slot + '\')">' +
+      '<div class="slot-emoji">' + emoji + '</div>' +
+      '<div class="slot-body">' +
+        '<div class="slot-name">' + label + '</div>' +
+        '<div class="slot-status">' + statusHtml + '</div>' +
+      '</div>' +
+      '<div class="slot-badge">' + (isTaken ? 'TAKEN' : 'MISSED') + '</div>' +
+    '</div>';
+  }
+
+  render();
+</script>
+
+<script>
+  // Register the service worker for offline/PWA support.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .catch(err => console.log('Service worker registration failed:', err));
+    });
+  }
+</script>
+
+</body>
+</html>
