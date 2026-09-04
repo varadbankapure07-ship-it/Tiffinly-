@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.varado7.tiffinly",
+      "sha256_cert_fingerprints": [
+        "D2:75:F3:16:AF:E3:38:C0:77:E9:9A:EB:31:2A:3A:F5:AB:B5:EE:9A:1F:61:FE:8F:33:84:2E:C8:47:74:87:0D"
+      ]
+    }
+  }
+]
