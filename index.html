@@ -1015,20 +1015,43 @@
     const el = document.getElementById(target === 'history' ? 'historySection' : 'calendarSection');
     if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+function saveSettings(){
+  const priceVal = parseFloat(document.getElementById('inputPrice').value);
 
-  function saveSettings(){
-    const billVal = parseFloat(document.getElementById('inputBill').value);
-    const priceVal = parseFloat(document.getElementById('inputPrice').value);
-    const monthObj = getMonthObj(activeMonthKey, true);
-    if(!isNaN(billVal) && billVal >= 0) monthObj.bill = billVal;
-    if(!isNaN(priceVal) && priceVal > 0) monthObj.price = priceVal;
-    data.defaultBill = monthObj.bill;
-    data.defaultPrice = monthObj.price;
-    saveData();
-    showToast('✓ ' + monthLabel(activeMonthKey) + ' updated successfully');
-    render();
+  // Check that the entered price is valid
+  if(isNaN(priceVal) || priceVal <= 0){
+    showToast('⚠️ Please enter a valid tiffin price');
+    return;
   }
 
+  // Save the new price as the default price
+  data.defaultPrice = priceVal;
+
+  // Apply the new price to ALL months
+  Object.keys(data.months).forEach(function(key){
+
+    const monthObj = data.months[key];
+
+    // Change tiffin price for this month
+    monthObj.price = priceVal;
+
+    // Automatically calculate the bill
+    // 2 tiffins per day × number of days × price
+    const daysCount = daysInMonthCount(key);
+    monthObj.bill = daysCount * 2 * priceVal;
+
+    data.months[key] = monthObj;
+  });
+
+  // Save everything
+  saveData();
+
+  showToast('✓ ₹' + priceVal + ' applied to all months');
+
+  // Refresh the app
+  render();
+}
+  
   function requestClearMonth(){
     pendingClearKey = activeMonthKey;
     document.getElementById('clearModalTitle').textContent = 'Clear ' + monthLabel(activeMonthKey) + '?';
